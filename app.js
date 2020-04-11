@@ -21,7 +21,7 @@ app.use("/feed", feedRoutes);
 // app.get("/", (req, res) => res.send({ title: "Hello World!" }));
 
 mongoose
-  .connect(dbKey)
+  .connect(dbKey, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     app.listen(port, () => console.log(`app listening on port ${port}!`));
     console.log("database successfully connected");
