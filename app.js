@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
 const port = 5000;
-const { dbKey } = require("./config/keys");
+const { dbKey } = require("./util/keys");
 const mongoose = require("mongoose");
 
 const feedRoutes = require("./routes/feed");
@@ -20,6 +20,10 @@ app.use(morgan("dev"));
 app.use("/feed", feedRoutes);
 // app.get("/", (req, res) => res.send({ title: "Hello World!" }));
 
-mongoose.connect(dbKey)
-
-app.listen(port, () => console.log(`app listening on port ${port}!`));
+mongoose
+  .connect(dbKey)
+  .then(() => {
+    app.listen(port, () => console.log(`app listening on port ${port}!`));
+    console.log("database successfully connected");
+  })
+  .catch((err) => console.log(err));
