@@ -19,6 +19,13 @@ router.post(
 
 router.get("/post/:postId", controller.getPost);
 
-router.put("/post/:postId", controller.updatePost);
+router.put(
+  "/post/:postId",
+  [
+    body("title").trim().isLength({ min: 5 }),
+    body("content").trim().isLength({ min: 5 }),
+  ],
+  controller.updatePost
+);
 
 module.exports = router;

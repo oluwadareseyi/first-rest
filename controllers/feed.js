@@ -1,6 +1,8 @@
 const { validationResult } = require("express-validator");
 const Post = require("../models/post");
 const errorHandler = require("../util/error");
+const fs = require("fs");
+const path = require("path");
 
 exports.getPosts = async (req, res, next) => {
   try {
@@ -22,9 +24,7 @@ exports.getPost = async (req, res, next) => {
   try {
     const post = await Post.findById(postId);
     if (!post) {
-      const error = new Error("Could not find post");
-      error.statusCode = 404;
-      throw error;
+      errorHandler("Could not find post", 404);
     }
     res.status(200).json({
       message: "Post retrieved successfully",
@@ -41,17 +41,14 @@ exports.getPost = async (req, res, next) => {
 exports.createPost = async (req, res, next) => {
   const { title, content } = req.body;
 
-  const errors = validationResult(req);
-
   try {
+    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       errorHandler("Please enter the correct data", 422);
     }
 
     if (!req.file) {
-      const error = new Error("Image not provided");
-      error.statusCode = 422;
-      throw error;
+      errorHandler("Image not provided", 422);
     }
 
     const imageUrl = req.file.path.replace("\\", "/");
@@ -79,11 +76,48 @@ exports.createPost = async (req, res, next) => {
 exports.updatePost = async (req, res, next) => {
   const postId = req.params.postId;
   const { title, content } = req.body;
-  let imageUrl = req.body.imageUrl;
-  if (req.file) {
-    imageUrl = req.file.path.replace("\\", "/");
-  }
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errorHandler("Please enter the correct data", 422);
+    }
+    let imageUrl = req.body.image;
+    if (req.file) {
+      imageUrl = req.file.path.replace("\\", "/");
+    }
 
-  if (!imageUrl) {
+    if (!imageUrl) {
+      errorHandler("no file picked", 422);
+    }
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      errorHandler("no post found", 404);
+    }
+
+    
+
+    post.title = title;
+    post.imageUrl = imageUrl;
+    post.content = content;
+
+    const updatedPost = await post.save();
+    res.status(200).json({
+      message: "Post created succesfully",
+      post: updatedPost,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
+};
+
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, "..", filePath);
+  fs.unlink(filePath, (err) => {
+    console.log(err);
+  });
 };
