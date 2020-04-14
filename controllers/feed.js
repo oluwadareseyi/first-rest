@@ -33,21 +33,13 @@ exports.createPost = async (req, res, next) => {
   const post = new Post({
     title,
     content,
-    creator: { name: "Seyi" },
     imageUrl: "/images/Rick-Morty.jpg",
+    creator: { name: "Seyi" },
   });
 
-  await post.save();
+  const result = await post.save();
   res.status(201).json({
     message: "Successfully created",
-    post: {
-      _id: new Date().toISOString(),
-      title,
-      content,
-      creator: {
-        name: "Seyi",
-      },
-      createdAt: new Date(),
-    },
+    post: result,
   });
 };
