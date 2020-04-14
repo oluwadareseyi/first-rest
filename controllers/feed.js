@@ -117,6 +117,26 @@ exports.updatePost = async (req, res, next) => {
   }
 };
 
+exports.deletePost = async (req, res, next) => {
+  const postId = req.params.postId;
+  try {
+    const post = await Post.findById(postId);
+    if (!post) {
+      errorHandler("Post not found", 422);
+    }
+    clearImage(post.imageUrl);
+    await Post.findByIdAndRemove(postId);
+    res.status(200).json({
+      message: "Post deleted successfully",
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+};
+
 const clearImage = (filePath) => {
   filePath = path.join(__dirname, "..", filePath);
   fs.unlink(filePath, (err) => {
