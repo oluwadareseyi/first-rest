@@ -17,4 +17,6 @@ router.post(
   controller.createPost
 );
 
+router.get("/post/:postId", controller.getPost);
+
 module.exports = router;
