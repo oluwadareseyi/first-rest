@@ -96,7 +96,9 @@ exports.updatePost = async (req, res, next) => {
       errorHandler("no post found", 404);
     }
 
-    
+    if (imageUrl !== post.imageUrl) {
+      clearImage(post.imageUrl);
+    }
 
     post.title = title;
     post.imageUrl = imageUrl;
