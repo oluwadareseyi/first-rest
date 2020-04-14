@@ -5,11 +5,20 @@ const fs = require("fs");
 const path = require("path");
 
 exports.getPosts = async (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
   try {
-    const posts = await Post.find();
+    const count = await Post.find().countDocuments();
+    totalItems = count;
+
+    const posts = await Post.find()
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
     res.status(200).json({
       message: "Fetched Posts",
       posts,
+      totalItems,
     });
   } catch (error) {
     if (!error.statusCode) {
