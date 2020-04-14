@@ -1,5 +1,6 @@
 const { validationResult } = require("express-validator");
 const Post = require("../models/post");
+const errorHandler = require("../util/error");
 
 exports.getPosts = async (req, res, next) => {
   try {
@@ -39,15 +40,12 @@ exports.getPost = async (req, res, next) => {
 
 exports.createPost = async (req, res, next) => {
   const { title, content } = req.body;
-  console.log(req.file);
 
   const errors = validationResult(req);
 
   try {
     if (!errors.isEmpty()) {
-      const error = new Error("Please enter the correct data");
-      error.statusCode = 422;
-      throw error;
+      errorHandler("Please enter the correct data", 422);
     }
 
     if (!req.file) {
@@ -84,5 +82,8 @@ exports.updatePost = async (req, res, next) => {
   let imageUrl = req.body.imageUrl;
   if (req.file) {
     imageUrl = req.file.path.replace("\\", "/");
+  }
+
+  if (!imageUrl) {
   }
 };
