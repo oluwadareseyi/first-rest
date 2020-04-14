@@ -78,5 +78,11 @@ exports.createPost = async (req, res, next) => {
   }
 };
 
-
-exports.createPost = async (req, res, next) => {}
+exports.updatePost = async (req, res, next) => {
+  const postId = req.params.postId;
+  const { title, content } = req.body;
+  let imageUrl = req.body.imageUrl;
+  if (req.file) {
+    imageUrl = req.file.path.replace("\\", "/");
+  }
+};
