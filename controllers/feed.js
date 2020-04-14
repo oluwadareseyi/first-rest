@@ -2,21 +2,18 @@ const { validationResult } = require("express-validator");
 const Post = require("../models/post");
 
 exports.getPosts = async (req, res, next) => {
-  res.status(200).json({
-    posts: [
-      {
-        _id: "1",
-        title: "First Post",
-        content:
-          "welcome the choice is either to repel the provision blind fault",
-        imageUrl: "images/Rick-Morty.jpg",
-        creator: {
-          name: "Seyi",
-        },
-        createdAt: new Date(),
-      },
-    ],
-  });
+  try {
+    const posts = await Post.find();
+    res.status(200).json({
+      message: "Fetched Posts",
+      posts,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
 };
 
 exports.getPost = async (req, res, next) => {
@@ -28,7 +25,7 @@ exports.getPost = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Post retrieved successfully",
       post,
     });
