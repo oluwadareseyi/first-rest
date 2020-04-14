@@ -23,23 +23,29 @@ exports.createPost = async (req, res, next) => {
   const { title, content } = req.body;
   const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    return res.status(422).json({
-      message: "Please enter the correct data",
-      errors: errors.array(),
+  try {
+    if (!errors.isEmpty()) {
+      const error = new Error("Please enter the correct data");
+      error.statusCode = 422;
+      throw error;
+    }
+
+    const post = new Post({
+      title,
+      content,
+      imageUrl: "/images/Rick-Morty.jpg",
+      creator: { name: "Seyi" },
     });
+
+    const result = await post.save();
+    res.status(201).json({
+      message: "Successfully created",
+      post: result,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
   }
-
-  const post = new Post({
-    title,
-    content,
-    imageUrl: "/images/Rick-Morty.jpg",
-    creator: { name: "Seyi" },
-  });
-
-  const result = await post.save();
-  res.status(201).json({
-    message: "Successfully created",
-    post: result,
-  });
 };
