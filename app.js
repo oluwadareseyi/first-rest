@@ -11,6 +11,7 @@ const multer = require("multer");
 const uuidv4 = require("uuid/v4");
 
 const feedRoutes = require("./routes/feed");
+const authRoutes = require("./routes/auth");
 
 app.use(cors());
 
@@ -44,6 +45,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(morgan("dev"));
 
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 app.use((error, req, res, next) => {
   // console.log(error);
   const status = error.statusCode || 500;

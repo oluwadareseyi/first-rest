@@ -1,5 +1,5 @@
-const { validationResult } = require("express-validator");
 const Post = require("../models/post");
+const { validationResult } = require("express-validator");
 const errorHandler = require("../util/error");
 const fs = require("fs");
 const path = require("path");
