@@ -39,6 +39,8 @@ exports.getPost = async (req, res, next) => {
 
 exports.createPost = async (req, res, next) => {
   const { title, content } = req.body;
+  console.log(req.file);
+
   const errors = validationResult(req);
 
   try {
@@ -48,10 +50,18 @@ exports.createPost = async (req, res, next) => {
       throw error;
     }
 
+    if (!req.file) {
+      const error = new Error("Image not provided");
+      error.statusCode = 422;
+      throw error;
+    }
+
+    const imageUrl = req.file.path.replace("\\", "/");
+
     const post = new Post({
       title,
       content,
-      imageUrl: "/images/Rick-Morty.jpg",
+      imageUrl,
       creator: { name: "Seyi" },
     });
 
