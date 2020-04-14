@@ -28,4 +28,6 @@ router.put(
   controller.updatePost
 );
 
+router.delete("/post/postId");
+
 module.exports = router;
