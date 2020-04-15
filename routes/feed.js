@@ -1,12 +1,10 @@
 const express = require("express");
-
 const { body } = require("express-validator");
-
 const controller = require("../controllers/feed");
-
 const router = express.Router();
+const isAuth = require("../middleware/isAuth");
 
-router.get("/posts", controller.getPosts);
+router.get("/posts", isAuth, controller.getPosts);
 
 router.post(
   "/post",
