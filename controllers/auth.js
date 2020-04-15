@@ -4,8 +4,10 @@ const errorHandler = require("../util/error");
 const bcrypt = require("bcryptjs");
 
 exports.signUp = async (req, res, next) => {
-  const errore = validationResult(req);
+  const errors = validationResult(req);
   const { email, password, name } = req.body;
+  console.log(email, password);
+
   try {
     if (!errors.isEmpty()) {
       errorHandler("Invalid details entered", 422, errors.array());
@@ -18,7 +20,7 @@ exports.signUp = async (req, res, next) => {
     });
     const data = await user.save();
     data.password = null;
-    res.status(210).json({ message: "Sign up successful", userId: data._id, data });
+    res.status(201).json({ message: "Sign up successful", userId: data._id });
   } catch (error) {
     if (!error.statusCode) {
       error.statusCode = 500;
