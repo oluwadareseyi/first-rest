@@ -25,16 +25,16 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/jpeg"
-  ) {
+  if (["image/png", "image.jpg", "image/jpeg"].includes(file.mimetype)) {
     cb(null, true);
   } else {
     cb(null, false);
   }
 };
+
+// file.mimetype === "image/png" ||
+//     file.mimetype === "image/jpg" ||
+//     file.mimetype === "image/jpeg"
 
 app.use(bodyparser.json());
 app.use(multer({ storage: storage, fileFilter: fileFilter }).single("image"));

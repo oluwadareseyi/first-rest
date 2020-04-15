@@ -49,17 +49,22 @@ exports.getPost = async (req, res, next) => {
 
 exports.createPost = async (req, res, next) => {
   const { title, content } = req.body;
-  const imageUrl = req.file.path.replace("\\", "/");
 
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      clearImage(imageUrl);
-      errorHandler("Please enter the correct data", 422);
+
+    if (req.file.path === undefined) {
+      errorHandler("Please upload an image", 404);
     }
+    const imageUrl = req.file.path.replace("\\", "/");
 
     if (!req.file) {
       errorHandler("Image not provided", 422);
+    }
+
+    if (!errors.isEmpty()) {
+      clearImage(imageUrl);
+      errorHandler("Please enter the correct data", 422);
     }
 
     const post = new Post({
