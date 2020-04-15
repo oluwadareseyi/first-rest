@@ -28,3 +28,23 @@ exports.signUp = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.login = async (req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      errorHandler("A user with this email could not be found", 401);
+    }
+
+    const isEqual = await bcrypt.compare(password, user.password);
+    if (!isEqual) {
+      errorHandler("Please enter a correct password", 401);
+    }
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+};
