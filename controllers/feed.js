@@ -78,7 +78,7 @@ exports.createPost = async (req, res, next) => {
     const result = await post.save();
     const user = await User.findById(req.userId);
     const creator = user;
-    user.posts.push(post);
+    await user.posts.push(post);
     await user.save();
     const { _id, name } = creator;
     res.status(201).json({
@@ -117,6 +117,10 @@ exports.updatePost = async (req, res, next) => {
       errorHandler("no post found", 404);
     }
 
+    if (post.creator.toString() !== req.userId) {
+      errorHandler("Not Authorized", 403);
+    }
+
     if (imageUrl !== post.imageUrl) {
       clearImage(post.imageUrl);
     }
@@ -145,8 +149,15 @@ exports.deletePost = async (req, res, next) => {
     if (!post) {
       errorHandler("Post not found", 422);
     }
+
+    if (post.creator.toString() !== req.userId) {
+      errorHandler("Not Authorized", 403);
+    }
     clearImage(post.imageUrl);
     await Post.findByIdAndRemove(postId);
+    const user = await User.findById(req.userId);
+    await user.posts.pull(postId);
+    await user.save();
     res.status(200).json({
       message: "Post deleted successfully",
     });
