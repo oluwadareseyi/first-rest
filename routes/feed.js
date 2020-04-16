@@ -8,6 +8,7 @@ router.get("/posts", isAuth, controller.getPosts);
 
 router.post(
   "/post",
+  isAuth,
   [
     body("title").trim().isLength({ min: 5 }),
     body("content").trim().isLength({ min: 5 }),
@@ -15,10 +16,11 @@ router.post(
   controller.createPost
 );
 
-router.get("/post/:postId", controller.getPost);
+router.get("/post/:postId", isAuth, controller.getPost);
 
 router.put(
   "/post/:postId",
+  isAuth,
   [
     body("title").trim().isLength({ min: 5 }),
     body("content").trim().isLength({ min: 5 }),
@@ -26,6 +28,6 @@ router.put(
   controller.updatePost
 );
 
-router.delete("/post/:postId", controller.deletePost);
+router.delete("/post/:postId", isAuth, controller.deletePost);
 
 module.exports = router;
