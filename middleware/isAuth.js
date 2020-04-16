@@ -2,9 +2,11 @@ const jwt = require("jsonwebtoken");
 const errorHandler = require("../util/error");
 
 module.exports = async (req, res, next) => {
-  const token = req.get("Authorization").split(" ")[1];
+  const token = req.get("Authorization");
+  let decodedToken;
+
   try {
-    const decodedToken = jwt.verify(token, "secretdonttellanyone");
+    decodedToken = jwt.verify(token, "secretdonttellanyone");
   } catch (error) {
     error.statusCode = 500;
     throw error;
