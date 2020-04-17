@@ -169,6 +169,42 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
+exports.getStatus = async (req, res, next) => {
+  try {
+    const { status } = await User.findById(req.userId).select("status");
+    if (!status) {
+      errorHandler("Status not found", 404);
+    }
+    res.status(200).json({ status });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+};
+
+exports.updateStatus = async (req, res, next) => {
+  const { status } = req.body;
+  try {
+    const user = await User.findById(req.userId);
+    if (!user) {
+      errorHandler("Not authorized", 422);
+    }
+    user.status = status;
+    const result = await user.save();
+    res.status(201).json({
+      message: "Post updated!!",
+      result: result.status,
+    });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
+};
+
 const clearImage = (filePath) => {
   filePath = path.join(__dirname, "..", filePath);
   fs.unlink(filePath, (err) => {

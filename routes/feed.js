@@ -30,4 +30,8 @@ router.put(
 
 router.delete("/post/:postId", isAuth, controller.deletePost);
 
+router.get("/status", isAuth, controller.getStatus);
+
+router.post("/status", isAuth, controller.updateStatus);
+
 module.exports = router;
