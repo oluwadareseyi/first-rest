@@ -8,10 +8,8 @@ const path = require("path");
 exports.getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = 2;
-  let totalItems;
   try {
-    const count = await Post.find().countDocuments();
-    totalItems = count;
+    const totalItems = await Post.find().countDocuments();
 
     const posts = await Post.find()
       .populate("creator")
