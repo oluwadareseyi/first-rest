@@ -37,7 +37,12 @@ const fileFilter = (req, file, cb) => {
 //     file.mimetype === "image/jpeg"
 
 app.use(bodyparser.json());
-app.use(multer({ storage: storage, fileFilter: fileFilter }).single("image"));
+app.use(
+  multer({
+    storage: storage,
+    fileFilter: fileFilter,
+  }).single("image")
+);
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 // app.use(express.json({ limit: "10kb" }));
@@ -51,14 +56,27 @@ app.use((error, req, res, next) => {
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
-  res.status(status).json({ message, data });
+  res.status(status).json({
+    message,
+    data,
+  });
 });
 // app.get("/", (req, res) => res.send({ title: "Hello World!" }));
 
 mongoose
-  .connect(dbKey, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(dbKey, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
-    app.listen(port, () => console.log(`app listening on port ${port}!`));
+    const server = app.listen(port, () =>
+      console.log(`app listening on port ${port}!`)
+    );
+    const io = require("./socket").init(server);
+    io.on("connection", (socket) => {
+      console.log("client connected");
+    });
+
     console.log("database successfully connected");
   })
   .catch((err) => console.log(err));
