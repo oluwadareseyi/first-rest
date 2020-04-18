@@ -14,6 +14,7 @@ exports.getPosts = async (req, res, next) => {
 
     const posts = await Post.find()
       .populate("creator")
+      .sort({ createdAt: -1 })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
     res.status(200).json({
@@ -115,13 +116,13 @@ exports.updatePost = async (req, res, next) => {
       errorHandler("no file picked", 422);
     }
 
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId).populate("creator");
 
     if (!post) {
       errorHandler("no post found", 404);
     }
 
-    if (post.creator.toString() !== req.userId) {
+    if (post.creator._id.toString() !== req.userId) {
       errorHandler("Not Authorized", 403);
     }
 
@@ -134,6 +135,7 @@ exports.updatePost = async (req, res, next) => {
     post.content = content;
 
     const updatedPost = await post.save();
+    io.getIO().emit("posts", { action: "update", post: updatedPost });
     res.status(200).json({
       message: "Post created succesfully",
       post: updatedPost,
@@ -162,6 +164,7 @@ exports.deletePost = async (req, res, next) => {
     const user = await User.findById(req.userId);
     await user.posts.pull(postId);
     await user.save();
+    io.getIO().emit("posts", { action: "delete" });
     res.status(200).json({
       message: "Post deleted successfully",
     });
