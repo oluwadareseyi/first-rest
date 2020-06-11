@@ -2,6 +2,7 @@ const express = require("express");
 const { body } = require("express-validator");
 const authController = require("../controllers/auth");
 const User = require("../models/user");
+const passport = require("../services/social");
 
 const router = express.Router();
 
@@ -26,5 +27,11 @@ router.post(
 );
 
 router.post("/login", authController.login);
+
+router.post(
+  "/google",
+  passport.authenticate("google-token", { session: false }),
+  authController.social
+);
 
 module.exports = router;

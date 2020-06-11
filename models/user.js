@@ -5,9 +5,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  googleId: {
+    type: String,
+  },
   password: {
     type: String,
-    required: true,
   },
   name: {
     type: String,
